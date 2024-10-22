@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: QBREST
+  profiles:
+    active: dev
+api:
+  url:
+    prefix: /api
