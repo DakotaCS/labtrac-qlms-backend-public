@@ -3,6 +3,6 @@ server:
 spring:
   common:
   labtrac-qlms:
-    url: jdbc:xxxxx://devsql.xxxxxx.us-east-1.rds.amazonaws.com:3306/xxxxxx?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=EST5EDT
-    username: xxxxxxx
-    password: xxxxxxx
+    url: jdbc:mysql://##################.rds.amazonaws.com:3306/labtrac-qlms?useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=EST5EDT
+    username: #############
+    password: #############

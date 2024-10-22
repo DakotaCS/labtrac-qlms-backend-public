@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" style="font-family:arial, 'helvetica neue', helvetica, sans-serif">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="telephone=no" name="format-detection">
+    <title>Low-Quantity Inventory Item Notification</title>
+    <!--[if (mso 16)]>
+    <style type="text/css">
+        a {text-decoration: none;}
+    </style>
+    <![endif]-->
+    <!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]-->
+    <!--[if gte mso 9]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:AllowPNG></o:AllowPNG>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
+    <style type="text/css">
+        /* [Include your existing styles here] */
+    </style>
+</head>
+<body data-new-gr-c-s-loaded="14.1064.0" style="width:100%;font-family:arial, 'helvetica neue', helvetica, sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;padding:0;Margin:0">
+<div class="es-wrapper-color" style="background-color:#F6F6F6">
+    <!--[if gte mso 9]>
+    <v:background xmlns:v="urn:schemas-microsoft-com:vml" fill="t">
+        <v:fill type="tile" color="#f6f6f6"></v:fill>
+    </v:background>
+    <![endif]-->
+    <table class="es-wrapper" width="100%" cellspacing="0" cellpadding="0" style="padding:0;Margin:0;width:100%;height:100%;background-repeat:repeat;background-position:center top">
+        <tr>
+            <td valign="top" style="padding:0;Margin:0">
+                <table class="es-content" cellspacing="0" cellpadding="0" align="center" style="width:100%">
+                    <tr>
+                        <td align="center" style="padding:0;Margin:0">
+                            <table class="es-content-body" cellspacing="0" cellpadding="0" bgcolor="#ffffff" align="center" style="background-color:#FFFFFF;width:600px">
+                                <tr>
+                                    <td align="left" style="padding:20px;Margin:0">
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td align="center" valign="top" style="width:560px">
+                                                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                                                        <tr>
+                                                            <td align="center" style="padding:0;Margin:0">
+                                                                <p style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:33px;color:#333333;font-size:22px"><strong>LMS Low-Quantity Inventory Item Alert</strong></p>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" style="padding:20px;Margin:0">
+                                        <table width="100%" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td valign="top" align="center" style="width:560px">
+                                                    <table width="100%" cellspacing="0" cellpadding="0" role="presentation">
+                                                        <tr>
+                                                            <td align="left" style="padding:0;Margin:0">
+                                                                <p style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">
+                                                                    Good Evening,<br><br>The following items have triggered a low-quantity alert:
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!-- Begin Items Table -->
+                                <tr>
+                                    <td align="left" style="padding:20px;Margin:0">
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td align="center" valign="top" style="width:560px">
+                                                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
+                                                        <!-- Table Header -->
+                                                        <tr>
+                                                            <td align="left" style="padding:5px;font-weight:bold;border-bottom:1px solid #cccccc;">Inventory ID</td>
+                                                            <td align="left" style="padding:5px;font-weight:bold;border-bottom:1px solid #cccccc;">Name</td>
+                                                            <td align="left" style="padding:5px;font-weight:bold;border-bottom:1px solid #cccccc;">Quantity Remaining</td>
+                                                            <td align="left" style="padding:5px;font-weight:bold;border-bottom:1px solid #cccccc;">Quantity Unit</td>
+                                                        </tr>
+                                                        <!-- Table Body -->
+                                                        <tr th:each="item : ${items}">
+                                                            <td align="left" style="padding:5px;border-bottom:1px solid #cccccc;" th:text="${item.inventoryItemId}">Inventory ID</td>
+                                                            <td align="left" style="padding:5px;border-bottom:1px solid #cccccc;" th:text="${item.name}">Name</td>
+                                                            <td align="left" style="padding:5px;border-bottom:1px solid #cccccc;" th:text="${item.currentQuantityAmount}">Quantity Remaining</td>
+                                                            <td align="left" style="padding:5px;border-bottom:1px solid #cccccc;" th:text="${item.quantityUnit}">Quantity Unit</td>
+                                                        </tr>
+                                                        <!-- Optional message if no items are low in quantity -->
+                                                        <tr th:if="${#lists.isEmpty(items)}">
+                                                            <td colspan="3" align="left" style="padding:5px;">There are no items currently low in quantity.</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!-- End Items Table -->
+                                <tr>
+                                    <td align="left" style="padding:20px;Margin:0">
+                                        <table cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td align="center" valign="top" style="width:560px">
+                                                    <table cellpadding="0" cellspacing="0" width="100%" role="presentation">
+                                                        <tr>
+                                                            <td align="left" style="padding:0;Margin:0">
+                                                                <p style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;color:#333333;font-size:14px">
+                                                                    Thank you,<br>The DKS Technical Solutions Team
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="padding:20px;Margin:0;font-size:0">
+                                                                <table border="0" width="100%" height="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                                                    <tr>
+                                                                        <td style="padding:0;Margin:0;border-bottom:1px solid #cccccc;background:unset;height:1px;width:100%;margin:0px"></td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="padding:0;Margin:0">
+                                                                <p style="Margin:0;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:15px;color:#333333;font-size:10px">
+                                                                    You received this email because you opted in for low-quantity inventory alerts. If you wish to change your notification settings, please change your settings in the LMS.
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!-- [Include any other necessary footer content here] -->
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

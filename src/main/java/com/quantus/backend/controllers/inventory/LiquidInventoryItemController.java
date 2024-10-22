@@ -1,12 +1,17 @@
 package com.quantus.backend.controllers.inventory;
 
 import com.quantus.backend.controllers.inventory.dto.InventoryItemDto;
+import com.quantus.backend.controllers.inventory.dto.InventoryItemNotificationDto;
 import com.quantus.backend.controllers.inventory.dto.SimpleInventoryItemDto;
 import com.quantus.backend.controllers.inventory.dto.UpdateInventoryItemPatchRequest;
 import com.quantus.backend.models.inventory.LiquidInventoryItem;
+import com.quantus.backend.services.inventory.InventoryItemNotificationService;
 import com.quantus.backend.services.inventory.LiquidInventoryItemService;
 import com.quantus.backend.utils.DozerEntityMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,14 +27,18 @@ import org.springframework.web.bind.annotation.*;
 public class LiquidInventoryItemController {
 
     private final LiquidInventoryItemService liquidInventoryItemService;
+    private final InventoryItemNotificationService inventoryItemNotificationService;
 
     /**
      * Retrieve an Inventory Item by ID
      */
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> findInventoryItemById(@PathVariable(name = "id") Integer itemId) {
-        return ResponseEntity.ok(DozerEntityMapper.mapObject(
-                liquidInventoryItemService.findInventoryItemyById(itemId), InventoryItemDto.class));
+        InventoryItemDto inventoryItemDto = DozerEntityMapper.mapObject(
+                liquidInventoryItemService.findInventoryItemById(itemId), InventoryItemDto.class);
+        inventoryItemDto.setInventoryItemNotification(DozerEntityMapper.mapObject(
+                inventoryItemNotificationService.findByItemId(itemId), InventoryItemNotificationDto.class));
+        return ResponseEntity.ok(inventoryItemDto);
     }
 
     /**
@@ -39,6 +48,21 @@ public class LiquidInventoryItemController {
     public ResponseEntity<Object> findAllInventoryItems() {
         return ResponseEntity.ok(DozerEntityMapper.mapObjectList(
                 liquidInventoryItemService.findAllInventoryItems(), SimpleInventoryItemDto.class));
+    }
+
+    /**
+     * Retrieve all Inventory Items with pagination
+     */
+    @GetMapping("/pageable")
+    public ResponseEntity<Object> findAllInventoryItems(
+            @RequestParam(value = "searchColumn", required = false, defaultValue = "Inventory Item") String searchColumn,
+            @RequestParam(value = "searchValue", required = false, defaultValue = "") String searchValue,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "50") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<LiquidInventoryItem> itemPage = liquidInventoryItemService.findAllInventoryItems(
+                searchColumn, searchValue, pageable);
+        return ResponseEntity.ok(itemPage.map(item -> DozerEntityMapper.mapObject(item, SimpleInventoryItemDto.class)));
     }
 
     /**
@@ -59,11 +83,8 @@ public class LiquidInventoryItemController {
     public ResponseEntity<Object> updateInventoryItem(
             @PathVariable(name = "id") Integer itemId,
             @RequestBody UpdateInventoryItemPatchRequest updateInventoryItemPatchRequest) {
-        return ResponseEntity.ok(DozerEntityMapper.mapObject(
-                liquidInventoryItemService.updateInventoryItem(updateInventoryItemPatchRequest.getName(),
-                        updateInventoryItemPatchRequest.getCasNumber(),
-                        updateInventoryItemPatchRequest.getCategoryId(),
-                        updateInventoryItemPatchRequest.getLocationId(), itemId), InventoryItemDto.class));
+        return ResponseEntity.ok(DozerEntityMapper.mapObject(liquidInventoryItemService.updateInventoryItem(
+                        updateInventoryItemPatchRequest, itemId), InventoryItemDto.class));
     }
 
     /**
@@ -83,7 +104,7 @@ public class LiquidInventoryItemController {
      * Delete an Inventory Item
      */
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteLocation(
+    public ResponseEntity<Object> deleteInventoryItem(
             @PathVariable(name = "id") Integer categoryId) {
         liquidInventoryItemService.deleteInventoryItem(categoryId);
         return ResponseEntity.ok("");

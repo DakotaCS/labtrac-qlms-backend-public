@@ -9,6 +9,7 @@ import com.quantus.backend.utils.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 /**
  * @author Dakota Soares
@@ -26,12 +27,8 @@ public class InventoryItemService {
     private final SolidInventoryItemRepository solidInventoryItemRepository;
     public final SysIdSequenceService sysIdSequenceService;
 
-    public InventoryItem findInventoryItemById(int id) {
-        InventoryItem item = inventoryItemRepository.getOne(id);
-        if(item == null) {
-            throw new CustomExceptionHandler.BadRequestCustomException("The item cannot be found");
-        }
-        return item;
+    public List<InventoryItem> findInventoryItemsByIds(List<Integer> ids) {
+        return inventoryItemRepository.findAllById(ids);
     }
 
     public String findInventoryItemType(Integer itemId) {

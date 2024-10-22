@@ -1,9 +1,11 @@
 package com.quantus.backend.controllers.inventory;
 
 import com.quantus.backend.controllers.inventory.dto.InventoryItemDto;
+import com.quantus.backend.controllers.inventory.dto.InventoryItemNotificationDto;
 import com.quantus.backend.controllers.inventory.dto.SimpleInventoryItemDto;
 import com.quantus.backend.controllers.inventory.dto.UpdateInventoryItemPatchRequest;
 import com.quantus.backend.models.inventory.SolidInventoryItem;
+import com.quantus.backend.services.inventory.InventoryItemNotificationService;
 import com.quantus.backend.services.inventory.SolidInventoryItemService;
 import com.quantus.backend.utils.DozerEntityMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +27,18 @@ import org.springframework.web.bind.annotation.*;
 public class SolidInventoryItemController {
 
     private final SolidInventoryItemService solidInventoryItemService;
+    private final InventoryItemNotificationService inventoryItemNotificationService;
 
     /**
      * Retrieve an Inventory Item by ID
      */
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> findInventoryItemById(@PathVariable(name = "id") Integer itemId) {
-        return ResponseEntity.ok(DozerEntityMapper.mapObject(
-                solidInventoryItemService.findInventoryItemById(itemId), InventoryItemDto.class));
+        InventoryItemDto inventoryItemDto = DozerEntityMapper.mapObject(
+                solidInventoryItemService.findInventoryItemById(itemId), InventoryItemDto.class);
+        inventoryItemDto.setInventoryItemNotification(DozerEntityMapper.mapObject(
+                inventoryItemNotificationService.findByItemId(itemId), InventoryItemNotificationDto.class));
+        return ResponseEntity.ok(inventoryItemDto);
     }
 
     /**
@@ -44,6 +50,9 @@ public class SolidInventoryItemController {
                 solidInventoryItemService.findAllInventoryItems(), SimpleInventoryItemDto.class));
     }
 
+    /**
+     * Retrieve all Inventory Items with pagination
+     */
     @GetMapping("/pageable")
     public ResponseEntity<Object> findAllInventoryItems(
             @RequestParam(value = "searchColumn", required = false, defaultValue = "Inventory Item") String searchColumn,
@@ -73,11 +82,8 @@ public class SolidInventoryItemController {
     public ResponseEntity<Object> updateInventoryItem(
             @PathVariable(name = "id") Integer itemId,
             @RequestBody UpdateInventoryItemPatchRequest updateInventoryItemPatchRequest) {
-        return ResponseEntity.ok(DozerEntityMapper.mapObject(
-                solidInventoryItemService.updateInventoryItem(updateInventoryItemPatchRequest.getName(),
-                        updateInventoryItemPatchRequest.getCasNumber(),
-                        updateInventoryItemPatchRequest.getCategoryId(),
-                        updateInventoryItemPatchRequest.getLocationId(), itemId), InventoryItemDto.class));
+        return ResponseEntity.ok(DozerEntityMapper.mapObject(solidInventoryItemService.updateInventoryItem(
+                updateInventoryItemPatchRequest, itemId), InventoryItemDto.class));
     }
 
     /**
@@ -97,7 +103,7 @@ public class SolidInventoryItemController {
      * Delete an Inventory Item
      */
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteLocation(
+    public ResponseEntity<Object> deleteInventoryItem(
             @PathVariable(name = "id") Integer categoryId) {
         solidInventoryItemService.deleteInventoryItem(categoryId);
         return ResponseEntity.ok("");

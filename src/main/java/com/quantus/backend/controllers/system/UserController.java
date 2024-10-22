@@ -38,6 +38,7 @@ public class UserController {
 
         UserDetailsDto userDetailsDto = new UserDetailsDto();
         userDetailsDto.setId(userDetails.getUserId());
+        userDetailsDto.setUserName(userDetails.getUsername());
 
         return ResponseEntity.ok(userDetailsDto);
     }
@@ -73,7 +74,7 @@ public class UserController {
     @PatchMapping(value = "/{id}/username")
     public ResponseEntity<Object> updateUsername(
             @PathVariable(name = "id") Integer userId,
-            @RequestBody UpdateUserPatchRequest userUpdatePatchRequest) {
+            @RequestBody UserPatchRequest userUpdatePatchRequest) {
         return ResponseEntity.ok(DozerEntityMapper.mapObject(
                 userService.updateUsername(userUpdatePatchRequest.getUserName(), userId), UserDetailsDto.class));
     }
@@ -84,7 +85,7 @@ public class UserController {
     @PatchMapping(value = "/{id}/password")
     public ResponseEntity<Object> updatePassword(
             @PathVariable(name = "id") Integer userId,
-            @RequestBody UpdateUserPatchRequest userUpdatePatchRequest) {
+            @RequestBody UserPatchRequest userUpdatePatchRequest) {
         return ResponseEntity.ok(DozerEntityMapper.mapObject(
                 userService.updatePassword(userUpdatePatchRequest.getPassword(), userId), UserDetailsDto.class));
     }
@@ -96,7 +97,7 @@ public class UserController {
     @PatchMapping(value = "/{id}/user-role")
     public ResponseEntity<Object> updateRoles(
             @PathVariable(name = "id") Integer userId,
-            @RequestBody UpdateUserPatchRequest userUpdatePatchRequest) {
+            @RequestBody UserPatchRequest userUpdatePatchRequest) {
         userService.updateRoles(userUpdatePatchRequest.getRole(), userId);
         return ResponseEntity.ok("");
     }
@@ -107,7 +108,7 @@ public class UserController {
     @PatchMapping(value = "/{id}/status")
     public ResponseEntity<Object> setUserStatus(
             @PathVariable(name = "id") Integer userId,
-            @RequestBody UpdateUserPatchRequest userUpdatePatchRequest) {
+            @RequestBody UserPatchRequest userUpdatePatchRequest) {
         userService.setUserStatus(userUpdatePatchRequest.getUserStatus(), userId);
         return ResponseEntity.ok("");
     }

@@ -1,9 +1,10 @@
 package com.quantus.backend.controllers.inventory;
 
 import com.quantus.backend.controllers.inventory.dto.InventoryItemDto;
+import com.quantus.backend.controllers.inventory.dto.InventoryItemNotificationPatchRequest;
 import com.quantus.backend.models.inventory.LiquidInventoryItem;
 import com.quantus.backend.models.inventory.SolidInventoryItem;
-import com.quantus.backend.services.inventory.InventoryItemService;
+import com.quantus.backend.services.inventory.InventoryItemNotificationService;
 import com.quantus.backend.services.inventory.LiquidInventoryItemService;
 import com.quantus.backend.services.inventory.SolidInventoryItemService;
 import com.quantus.backend.utils.CustomExceptionHandler;
@@ -11,10 +12,7 @@ import com.quantus.backend.utils.DozerEntityMapper;
 import com.quantus.backend.utils.InventoryItemType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Dakota Soares
@@ -27,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("${api.url.prefix}/inventory")
 public class InventoryItemController {
 
-    private final InventoryItemService inventoryItemService;
     private final LiquidInventoryItemService liquidInventoryItemService;
     private final SolidInventoryItemService solidInventoryItemService;
+    private final InventoryItemNotificationService inventoryItemNotificationService;
 
     /**
      * Create an Inventory Item
@@ -51,4 +49,17 @@ public class InventoryItemController {
             throw new CustomExceptionHandler.BadRequestCustomException("An error occurred creating inventory item");
         }
     }
+
+    /**
+     * Update an Inventory Item's notification preferences
+     */
+    @PatchMapping(value = "/{id}/notification")
+    public ResponseEntity<Object> updateInventoryItemNotification(
+            @PathVariable(name = "id") Integer id,
+            @RequestBody InventoryItemNotificationPatchRequest request) {
+        inventoryItemNotificationService.updateLowQuantityNotification(
+                id, request.getLowQuantityAlarm());
+        return ResponseEntity.ok("");
+    }
+
 }

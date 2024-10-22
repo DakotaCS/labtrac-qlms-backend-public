@@ -1,7 +1,9 @@
 package com.quantus.backend.models.inventory;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 
 /**
  * @author Dakota Soares
@@ -10,4 +12,8 @@ import jakarta.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("LIQUID")
-public class LiquidInventoryItem extends InventoryItem {}
+public class LiquidInventoryItem extends InventoryItem {
+
+    @OneToOne(mappedBy = "liquidInventoryItem", cascade = CascadeType.ALL)
+    protected LiquidInventoryItemProperties liquidInventoryItemProperties;
+}

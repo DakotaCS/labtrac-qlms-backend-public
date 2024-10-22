@@ -10,6 +10,7 @@ import lombok.Data;
 
 @Data
 public class SolidUnitDto {
+    private Integer id;
     private String quantityUnit;
     private String quantityUnitCode;
 }

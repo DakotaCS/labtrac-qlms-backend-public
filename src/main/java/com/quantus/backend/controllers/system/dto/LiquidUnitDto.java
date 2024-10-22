@@ -10,6 +10,7 @@ import lombok.Data;
 
 @Data
 public class LiquidUnitDto {
+    private Integer id;
     private String quantityUnit;
     private String quantityUnitCode;
 }

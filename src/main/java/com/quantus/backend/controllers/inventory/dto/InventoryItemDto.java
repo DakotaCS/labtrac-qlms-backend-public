@@ -29,4 +29,5 @@ public class InventoryItemDto {
     private Double originalQuantityAmount;
     private Double currentQuantityAmount;
     private String quantityUnit;
+    private InventoryItemNotificationDto inventoryItemNotification;
 }

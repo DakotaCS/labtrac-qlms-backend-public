@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 public class DatabaseSourceConfiguration {
 
     @Bean
-    @ConfigurationProperties("spring.x-x")
+    @ConfigurationProperties("spring.labtrac-qlms")
     public DataSourceProperties PrimaryDatasourceProperties() {
         return new DataSourceProperties();
     }

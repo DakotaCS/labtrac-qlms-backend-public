@@ -10,7 +10,5 @@ import lombok.Data;
 
 @Data
 public class ZebraPrinterConfigurationDto {
-    private String printerConfig;
-    private String printerNetworkIp;
-    private String printerNetworkPort;
+    private String defaultPrinterUid;
 }

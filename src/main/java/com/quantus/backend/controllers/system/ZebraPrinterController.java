@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
  * @since 2024-10-12
  *
  * QLMS provides 2 printer modes: local (USB print) or network (IP print).
+ * The back-end does not control printing, but will generate all ZPL label codes.
+ * It also will store the default printer UID.
  */
 
 @RestController
@@ -29,82 +31,37 @@ public class ZebraPrinterController {
      * @param printRequest
      * @return ZebraPrinterResponse
      *
-     * Note: Printing locally from the browser is handled only by the front-end. ZPL generation happens on the
-     * backend.
+     * Note: All printing is carried out by the front-end via the Zebra BrowserPrint Lib
      */
     @PostMapping("/item")
     public ResponseEntity<Object> printItemLabel(@RequestBody ZebraPrinterRequest printRequest) {
 
         ZebraPrinterResponse response = new ZebraPrinterResponse();
 
-        //Retrieve the system printer configuration
-        String printerConfig = globalVariableService.findGlobalVariableValueByCode("PrinterConfig");
+        response.setZplString(zebraPrinterService.printInventoryItemLabel(printRequest.getItemId(),
+                printRequest.getInventoryItemId(), printRequest.getName(), printRequest.getLocation()));
 
-        //If the configuration is set to local, printing logic is contained on the frontend
-        if(printerConfig.equals("LOCAL")) {
-            response.setZplString(zebraPrinterService.printLocalInventoryItemLabel(printRequest.getItemId(),
-                    printRequest.getInventoryItemId(), printRequest.getName(), printRequest.getLocation()));
-            response.setPrinterConfig("LOCAL");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        }
-        //If the configuration is set to network, the backend handles all the printing
-        if (printerConfig.equals("NETWORK")) {
-            response.setZplString(zebraPrinterService.printNetworkInventoryItemLabel(
-                    globalVariableService.findGlobalVariableValueByCode("PrinterNetworkIP"),
-                    Integer.valueOf(globalVariableService.findGlobalVariableValueByCode("PrinterNetworkPort")),
-                    printRequest.getItemId(), printRequest.getInventoryItemId(), printRequest.getName(),
-                    printRequest.getLocation()));
-            response.setPrinterConfig("NETWORK");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Could not print the label.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
-     * Update the default Printer Configuration
+     * Get the default printer UID
      */
-    @PatchMapping(value = "/locale")
-    public ResponseEntity<Object> updatePrinterConfiguration(
-            @RequestBody DeviceConfigurationDto deviceConfigurationDto) {
-        globalVariableService.updatePrinterLocale(deviceConfigurationDto.getPrinterConfiguration());
-        return ResponseEntity.ok("");
-    }
-
-    /**
-     * Update the default network printer IP
-     */
-    @PatchMapping(value = "/ip")
-    public ResponseEntity<Object> updatePrinterIP(
-            @RequestBody DeviceConfigurationDto deviceConfigurationDto) {
-        globalVariableService.updatePrinterIp(deviceConfigurationDto.getPrinterNetworkIp());
-        return ResponseEntity.ok("");
-    }
-
-    /**
-     * Update the default network printer Port
-     */
-    @PatchMapping(value = "/port")
-    public ResponseEntity<Object> updatePrinterPort(
-            @RequestBody DeviceConfigurationDto deviceConfigurationDto) {
-        globalVariableService.updatePrinterPort(deviceConfigurationDto.getPrinterNetworkPort());
-        return ResponseEntity.ok("");
-    }
-
-    /**
-     * Get printer configuration settings
-     */
-    @GetMapping(value = "/configuration")
+    @GetMapping(value = "/default-printer")
     public ResponseEntity<Object> getPrinterConfiguration() {
         ZebraPrinterConfigurationDto zebraPrinterConfigurationDto = new ZebraPrinterConfigurationDto();
-        zebraPrinterConfigurationDto.setPrinterConfig(
-                globalVariableService.findGlobalVariableValueByCode("PrinterConfig"));
-        zebraPrinterConfigurationDto.setPrinterNetworkIp(
-                globalVariableService.findGlobalVariableValueByCode("PrinterNetworkIP"));
-        zebraPrinterConfigurationDto.setPrinterNetworkPort(
-                globalVariableService.findGlobalVariableValueByCode("PrinterNetworkPort"));
+        zebraPrinterConfigurationDto.setDefaultPrinterUid(
+                globalVariableService.findGlobalVariableValueByCode("defaultPrinterUid"));
         return ResponseEntity.ok(zebraPrinterConfigurationDto);
     }
 
-    //POST /items Batch Print TBD
+    /**
+     * Update the default printer UID
+     */
+    @PatchMapping(value = "/default-printer")
+    public ResponseEntity<Object> updateDefaultPrinter(
+            @RequestBody ZebraPrinterConfigurationDto zebraPrinterConfigurationDto) {
+        globalVariableService.updateDefaultPrinter(zebraPrinterConfigurationDto.getDefaultPrinterUid());
+        return ResponseEntity.ok("");
+    }
 }

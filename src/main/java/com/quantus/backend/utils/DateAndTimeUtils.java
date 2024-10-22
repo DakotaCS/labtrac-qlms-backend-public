@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -28,5 +29,12 @@ public class DateAndTimeUtils {
 
     public static LocalDateTime dateToLocalDateTime(Date date) {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    public static Date addMonthsToCurrentDate(int monthsToAdd) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(getCurrentTimeAsDate());
+        calendar.add(Calendar.MONTH, monthsToAdd);
+        return calendar.getTime();
     }
 }

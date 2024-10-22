@@ -1,5 +1,6 @@
 package com.quantus.backend.controllers.system;
 
+import com.quantus.backend.utils.MailSenderHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,8 @@ import org.springframework.web.client.RestTemplate;
 @RequestMapping("${api.url.prefix}/system/test")
 public class TestController {
 
+    private final MailSenderHelper emailSenderHelper;
+
     @GetMapping("")
     public ResponseEntity<Object>  getCasTest() {
         RestTemplate restTemplate = new RestTemplate();
@@ -29,5 +32,15 @@ public class TestController {
         String responseBody = response.getBody();
         System.out.println(responseBody);
         return ResponseEntity.ok("");
+    }
+
+    @GetMapping("/mail")
+    public String sendEmail() {
+        emailSenderHelper.sendSimpleEmail(
+                "dakota.soares@execulink.com",
+                "Test Subject",
+                "This is a test email."
+        );
+        return "Email sent successfully";
     }
 }

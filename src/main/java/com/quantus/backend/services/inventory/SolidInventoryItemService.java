@@ -1,6 +1,8 @@
 package com.quantus.backend.services.inventory;
 
+import com.quantus.backend.controllers.inventory.dto.UpdateInventoryItemPatchRequest;
 import com.quantus.backend.models.inventory.SolidInventoryItem;
+import com.quantus.backend.models.inventory.UnclassifiedInventoryItem;
 import com.quantus.backend.repositories.inventory.SolidInventoryItemRepository;
 import com.quantus.backend.repositories.inventory.SolidInventoryItemSpecification;
 import com.quantus.backend.services.system.CategoryService;
@@ -29,6 +31,7 @@ public class SolidInventoryItemService {
     private final SetInventoryItemStatusHelper setInventoryItemStatusHelper;
     private final LocationService locationService;
     private final CategoryService categoryService;
+    private final InventoryItemNotificationService inventoryItemNotificationService;
 
     public List<SolidInventoryItem> findAllInventoryItems() {
         return solidInventoryItemRepository.getAll();
@@ -76,17 +79,35 @@ public class SolidInventoryItemService {
         return newInventoryItem;
     }
 
+    public SolidInventoryItem createInventoryItemFromTransfer(UnclassifiedInventoryItem unclassifiedInventoryItem) {
+        SolidInventoryItem solidInventoryItem = new SolidInventoryItem();
+        solidInventoryItem.setInventoryItemId(unclassifiedInventoryItem.getInventoryItemId());
+        solidInventoryItem.setName(unclassifiedInventoryItem.getName());
+        solidInventoryItem.setImportDate(unclassifiedInventoryItem.getImportDate());
+        solidInventoryItem.setStatus(InventoryItemStatusType.OK.toString());
+        solidInventoryItem.setLocation(unclassifiedInventoryItem.getLocation());
+        solidInventoryItem.setCategory(unclassifiedInventoryItem.getCategory());
+        solidInventoryItem.setExpirationDate(unclassifiedInventoryItem.getExpirationDate());
+        solidInventoryItem.setCasNumber(unclassifiedInventoryItem.getCasNumber());
+        //Editing quantity amounts for unclassified inventory isn't allowed
+        solidInventoryItem.setOriginalQuantityAmount(0.00);
+        solidInventoryItem.setCurrentQuantityAmount(0.00);
+        //Default delineation to grams
+        solidInventoryItem.setQuantityUnit("g");
+        return solidInventoryItemRepository.save(solidInventoryItem);
+    }
+
     public SolidInventoryItem updateInventoryItem(
-            String name, String casNumber, Integer categoryId, Integer locationId,Integer itemId) {
+            UpdateInventoryItemPatchRequest updateInventoryItemPatchRequest, Integer itemId) {
         SolidInventoryItem solidInventoryItem = findInventoryItemById(itemId);
         //If the name field is empty/null or the name already exists, throw an error.
-        if(StringUtils.IsStringEmptyOrNull(name) || StringUtils.IsStringEmptyOrNull(casNumber)) {
+        if(StringUtils.IsStringEmptyOrNull(updateInventoryItemPatchRequest.getName())) {
             throw new CustomExceptionHandler.BadRequestCustomException("Item name or CAS number is not valid.");
         }
-        solidInventoryItem.setCategory(categoryService.findCategoryById(categoryId));
-        solidInventoryItem.setLocation(locationService.findLocationById(locationId));
-        solidInventoryItem.setName(name);
-        solidInventoryItem.setCasNumber(casNumber);
+        solidInventoryItem.setCategory(categoryService.findCategoryById(updateInventoryItemPatchRequest.getCategoryId()));
+        solidInventoryItem.setLocation(locationService.findLocationById(updateInventoryItemPatchRequest.getLocationId()));
+        solidInventoryItem.setName(updateInventoryItemPatchRequest.getName());
+        solidInventoryItem.setCasNumber(updateInventoryItemPatchRequest.getCasNumber());
         return solidInventoryItemRepository.save(solidInventoryItem);
     }
 
@@ -108,6 +129,7 @@ public class SolidInventoryItemService {
 
     public void deleteInventoryItem(Integer itemId) {
         SolidInventoryItem solidInventoryItem = findInventoryItemById(itemId);
+        inventoryItemNotificationService.deleteInventoryItemNotification(solidInventoryItem.getId());
         solidInventoryItemRepository.logicalDelete(solidInventoryItem);
     }
 }

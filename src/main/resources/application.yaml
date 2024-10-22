@@ -3,6 +3,19 @@ spring:
     name: QBREST
   profiles:
     active: dev
+  mail:
+    host: dkstechnicalsolutions.ca
+    port: 465
+    username: donotreply@dkstechnicalsolutions.ca
+    password: ###########
+    protocol: smtp
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: "*"
+    template:
+        low-quantity: low-quantity-template
+    notification-schedule: 0 59 23 * * *
 api:
   url:
     prefix: /api
